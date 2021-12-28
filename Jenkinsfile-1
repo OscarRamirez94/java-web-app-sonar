@@ -1,17 +1,11 @@
 node {
-  stage('Clone the Git') {
-   git 'https://github.com/shazforiot/GOL.git'
+  stage('SCM') {
+    checkout scm
   }
-  stage('SonarQube analysis') {
-    def scannerHome = tool 'sonar-scanner';
+  stage('SonarQube Analysis') {
+    def mvn = tool 'M3';
     withSonarQubeEnv('sonar-scanner') {
-      sh "${scannerHome}/bin/sonar-scanner \
-      -D sonar.login=admin \
-      -D sonar.password=admin123 \
-      -D sonar.projectKey=sonarqubetest \
-      -D sonar.exclusions=vendor/**,resources/**,**/*.java \
-      -Dsonar.analysis.mode= \
-      -D sonar.host.url=http://localhost:9000/"
+      sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonarqubetest"
     }
   }
 }
